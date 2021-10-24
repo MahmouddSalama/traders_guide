@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "57692900815",
+    "project_id": "traders-guide-2614b",
+    "storage_bucket": "traders-guide-2614b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:57692900815:android:eab6d018cf3f5d4a7016ba",
+        "android_client_info": {
+          "package_name": "com.example.financial_dealings"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "57692900815-qrcneba47g24rkap1sknkve7g0tnt0oc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBj93iTBq8dVwWg5IxLsuEXrAROPJUu2VM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "57692900815-qrcneba47g24rkap1sknkve7g0tnt0oc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
