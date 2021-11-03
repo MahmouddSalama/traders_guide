@@ -1,8 +1,11 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:financial_dealings/sherd/componant/animaiton_background.dart';
 import 'package:financial_dealings/sherd/componant/default_button.dart';
 import 'package:financial_dealings/sherd/componant/default_text_fields.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -19,7 +22,7 @@ class _AddItemState extends State<AddItem> {
   final _nameControlle = TextEditingController();
   final _addressControlle = TextEditingController();
   final _departmentControlle = TextEditingController();
-
+  bool loading =false;
   @override
   void dispose() {
     // TODO: implement dispose
@@ -101,7 +104,7 @@ class _AddItemState extends State<AddItem> {
                   ),
                   DefaultTextField(
                     hint: 'العنوان',
-                    textEditingController: _nameControlle,
+                    textEditingController: _addressControlle,
                     validetor: (v) {
                       if (v.toString().isEmpty) return 'ادخل عنوان صحيح';
                     },
@@ -111,7 +114,7 @@ class _AddItemState extends State<AddItem> {
                   ),
                   DefaultTextField(
                     hint: 'المجال',
-                    textEditingController: _nameControlle,
+                    textEditingController: _departmentControlle,
                     validetor: (v) {
                       if (v.toString().isEmpty) return 'ادخل اسم المجال صحيح';
                     },
@@ -120,8 +123,10 @@ class _AddItemState extends State<AddItem> {
                   ),
                   SizedBox(height: 20),
                   SizedBox(height: 10),
-                  DefaultButton(
-                    function: () {},
+                 loading?Center(child: CircularProgressIndicator(),): DefaultButton(
+                    function: () {
+                      _add();
+                    },
                     text: 'اضافه',
                   )
                 ],
@@ -133,8 +138,30 @@ class _AddItemState extends State<AddItem> {
     );
   }
 
+  _add()async{
+    setState(() {
+      loading=true;
+    });
+    final ref = await FirebaseStorage.instance
+        .ref()
+        .child('checkImages')
+        .child(_nameControlle.text+ '.jpg');
+    await ref.putFile(image!);
+    final url = await ref.getDownloadURL();
+    await FirebaseFirestore.instance.collection('blacklist').doc().set({
+      'name':_nameControlle.text,
+      'trak':_departmentControlle.text,
+      'address':_addressControlle.text,
+      'imageUrl':url,
+      'userId':FirebaseAuth.instance.currentUser!.uid,
+    }).then((value) {
+      setState(() {
+        loading=false;
+      });
+      Navigator.pop(context);
+    });
+  }
   File? image;
-
   _showPhotoDialog() {
     showDialog(
       context: context,

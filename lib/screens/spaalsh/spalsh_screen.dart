@@ -1,3 +1,4 @@
+import 'package:financial_dealings/screens/auth/auth_stste/auth_state.dart';
 import 'package:financial_dealings/screens/auth/login/login_screen.dart';
 import 'package:financial_dealings/sherd/methods/method.dart';
 
@@ -37,7 +38,7 @@ class _SplashScreenState extends State<SplashScreen>
   Widget build(BuildContext context) {
 
     Future.delayed(Duration(seconds: 5),(){
-      Methods.NavReplace(ctx: context,page: LoginScreen());
+      Methods.NavReplace(ctx: context,page: AuthState());
     });
     return Scaffold(
       body: Stack(

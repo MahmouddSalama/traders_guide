@@ -13,9 +13,12 @@ class To extends StatelessWidget {
           child: ListView.builder(
             physics: BouncingScrollPhysics(),
             itemBuilder: (ctx, index) {
-              return CustomerCard(
-                index: index,
-              );
+              return Text('data');
+              // return CustomerCard(
+              //   index: index,
+              //   name: '',
+              //   delete: (){},
+              // );
             },
             itemCount: 12,
           ),

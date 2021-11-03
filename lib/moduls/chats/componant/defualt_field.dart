@@ -1,12 +1,21 @@
-
 import 'package:flutter/material.dart';
+
 class DefaultField extends StatelessWidget {
   final String hint;
   final double elevation;
   final Widget? perfix;
   final Widget? sufix;
+  final TextEditingController textEditingController;
 
-  const DefaultField({Key? key,required this.hint, this.elevation=5, this.perfix, this.sufix}) : super(key: key);
+  const DefaultField({
+    Key? key,
+    required this.hint,
+    this.elevation = 5,
+    this.perfix,
+    this.sufix,
+    required this.textEditingController,
+  }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -18,14 +27,19 @@ class DefaultField extends StatelessWidget {
         child: Card(
           elevation: elevation,
           child: TextFormField(
+            maxLines: 3,
+            maxLength: 500,
+            controller: textEditingController,
             keyboardType: TextInputType.name,
             decoration: InputDecoration(
-              suffixIcon:sufix ,
+              counterText: '',
+              suffixIcon: sufix,
               prefixIcon: perfix,
               border: InputBorder.none,
               hintText: hint,
-              hintStyle: TextStyle(color:Color(0xff002A4D).withOpacity(.5)),
-              contentPadding: EdgeInsets.symmetric(horizontal: 15,vertical: 10),
+              hintStyle: TextStyle(color: Color(0xff002A4D).withOpacity(.5)),
+              contentPadding:
+                  EdgeInsets.symmetric(horizontal: 15, vertical: 10),
             ),
           ),
         ),

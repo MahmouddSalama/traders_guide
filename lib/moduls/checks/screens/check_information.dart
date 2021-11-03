@@ -1,7 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:financial_dealings/moduls/customar_accounts/componants/add_archef.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class CheckInformation extends StatelessWidget {
+  final id,color;
+
+  const CheckInformation({Key? key,required this.id,required this.color,}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -10,41 +16,61 @@ class CheckInformation extends StatelessWidget {
         children: [
           Container(
             width: size.width,
-            child: Image.network(
-              'https://images.unsplash.com/flagged/photo-1573740144655-bbb6e88fb18a?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=435&q=80',
-              fit: BoxFit.fill,
-            ),
-            height: size.height * .5,
-            color: Colors.blue,
+
+            height: size.height * .3,
+            color: color,
           ),
-          Align(
-            alignment: Alignment(0, 1),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
-              ),
-              height: size.height * .60,
-              child: Padding(
-                padding: EdgeInsets.only(top: 10, right: 20, left: 20),
-                child: Column(
-                  children: [
-                    buildColumn(text1: 'االشيك من :  ', text2: 'محمود سلامه '),
-                    buildColumn(text1: 'الشيك إلي :  ', text2: 'محمد احمد'),
-                    buildColumn(text1: 'المعاد المستحق :  ', text2: '12-2-2021'),
-                    buildColumn(text1: 'المعاد السداد :  ', text2: '12-2-2021'),
-                    buildColumn(text1: 'المبلغ :  ', text2: '1000 ج'),
-                    buildColumn(text1: 'تم التسديد :  ', text2: ' ليس بعد'),
-                    buildColumn(text1: 'تم الرفض من البنك :  ', text2: 'لا'),
-                  ],
-                ),
-              ),
-            ),
+          StreamBuilder(
+            stream: FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid)
+                .collection('checks').snapshots(),
+            builder: (context,AsyncSnapshot<QuerySnapshot> snapshot) {
+              try {
+                final docs = snapshot.data!.docs.firstWhere((element) => element.id.toString()==id);
+                if (snapshot.connectionState == ConnectionState.waiting)
+                  return Center(child: CircularProgressIndicator());
+                else if (snapshot.hasError)
+                  return Text("error");
+                else if (snapshot.hasData && snapshot.data!.docs.length != 0) {
+                  return Align(
+                    alignment: Alignment(0, 1),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+                      ),
+                      height: size.height * .8,
+                      child: Padding(
+                        padding: EdgeInsets.only(top: 10, right: 20, left: 20),
+                        child: Column(
+                          children: [
+                            buildColumn(text1: 'االشيك من :  ', text2: docs['from']),
+                            buildColumn(text1: 'الشيك إلي :  ', text2: docs['to']),
+                            buildColumn(
+                                text1: 'المعاد المستحق :  ', text2: docs['dueDate']),
+                            buildColumn(text1: 'المعاد السداد :  ', text2: docs['dateOfPayment']),
+                            buildColumn(text1: 'المبلغ :  ', text2: '${docs['money']} ج'),
+                            buildColumn(text1: 'تم التسديد :  ', text2: docs['paid']?'نعم':'لا'),
+                            buildColumn(text1: 'تم الرفض من البنك :  ',text2: docs['rejected ']?'نعم':'لا'),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                } else if (snapshot.data!.docs.length == 0) {
+                  return Center(
+                    child: Text('لا يوجد عملاء مدينون'),
+                  );
+                }
+              } catch (e) {}
+              return Center(child: Text('fff'));
+            }
           ),
         ],
       ),
     );
   }
+
+
 
   Flexible buildFlexible({text, flex}) {
     return Flexible(
