@@ -1,13 +1,18 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-
+import 'package:intl/intl.dart';
 class MessageBubble extends StatelessWidget {
   final String message;
   final String username;
   final bool isme;
   final String imageurl;
+  final bool isImage;
+  final Timestamp time;
 
   const MessageBubble({
     Key? key,
+    required this.time,
+    required this.isImage,
     required this.message,
     required this.imageurl,
     required this.username,
@@ -16,10 +21,11 @@ class MessageBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    DateTime dateTime= DateTime.fromMicrosecondsSinceEpoch(time.microsecondsSinceEpoch);
     Size size=MediaQuery.of(context).size;
     return Row(
-      mainAxisAlignment:  isme?MainAxisAlignment.start:MainAxisAlignment.end,
-      children: [
+       mainAxisAlignment:  isme?MainAxisAlignment.start:MainAxisAlignment.end,
+       children: [
         Stack(
           children: [
             Container(
@@ -40,15 +46,51 @@ class MessageBubble extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   crossAxisAlignment:isme? CrossAxisAlignment.start:CrossAxisAlignment.end,
                   children: [
+                    Text(username,style: TextStyle(
+                      fontSize: 10,
+                      color: isme?Colors.white:Colors.black,
+                    ),),
+                    SizedBox(height: 8,),
+                    isImage?
+                    GestureDetector(
+                      onTap: (){
+                        showDialog(context: context, builder: (context){
+                          return AlertDialog(
+                            content: Container(
+                              height: size.height*.6,
+                              width: size.width,
+                              child: Image.network(message,fit: BoxFit.fill,),
+                            ),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20)),
+                          );
+                        });
+                      },
+                      child: Container(
+                        child: Image.network(
+                          message,
+                          fit: BoxFit.fill,
+                        ),
+                      ),
+                    ):
                     Text(message,style: TextStyle(
                       fontSize: 18,
                       color: isme?Colors.white:Colors.black,
                     ),),
-                    SizedBox(height: 8,),
-                    Text(username,style: TextStyle(
-                      fontSize: 10,
-                      color: isme?Colors.white:Colors.black,
-                    ),)
+                    SizedBox(height: 5,),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(DateFormat('hh:mm a').format(dateTime),style: TextStyle(
+                          fontSize: 10,
+                          color: isme?Colors.white:Colors.black,
+                        ),),
+                        Text('${dateTime.year.toString()}/${dateTime.month.toString()}/${dateTime.day.toString()}',style: TextStyle(
+                          fontSize: 10,
+                          color: isme?Colors.white:Colors.black,
+                        ),),
+                      ],
+                    ),
                   ],
                 ),
               ),

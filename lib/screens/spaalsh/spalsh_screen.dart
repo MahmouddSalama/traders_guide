@@ -36,8 +36,7 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-
-    Future.delayed(Duration(seconds: 5),(){
+    Future.delayed(Duration(seconds: 2),(){
       Methods.NavReplace(ctx: context,page: AuthState());
     });
     return Scaffold(

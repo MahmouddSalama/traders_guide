@@ -6,8 +6,10 @@ class DefaultField extends StatelessWidget {
   final Widget? perfix;
   final Widget? sufix;
   final TextEditingController textEditingController;
+  final void Function (String v) search;
 
   const DefaultField({
+   required this.search,
     Key? key,
     required this.hint,
     this.elevation = 5,
@@ -27,6 +29,7 @@ class DefaultField extends StatelessWidget {
         child: Card(
           elevation: elevation,
           child: TextFormField(
+            onChanged: (v)=>search(v),
             maxLines: 3,
             maxLength: 500,
             controller: textEditingController,

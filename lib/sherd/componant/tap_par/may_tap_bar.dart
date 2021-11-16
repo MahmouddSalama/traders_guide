@@ -33,28 +33,15 @@ class MyTapBar extends StatelessWidget {
         appBar: AppBar(
           leading: IconButton(
             onPressed: (){
-              FirebaseAuth.instance.signOut();
+             if( Navigator.canPop(context))
+               Navigator.pop(context);
             },
-            icon: Icon(Icons.logout),
+            icon: Icon(Icons.arrow_back),
           ),
           title: Text(
             title,
             style: GoogleFonts.almarai(color: Colors.black),
           ),
-          actions: [
-            // IconButton(
-            //     onPressed: () {
-            //       Methods.Navplace(page: NotificationsScreen(),ctx: context);
-            //     },
-            //     icon: Icon(
-            //       Icons.notifications,
-            //     )),
-            // IconButton(
-            //     onPressed: () {},
-            //     icon: Icon(
-            //       Icons.search,
-            //     )),
-          ],
           bottom: TabBar(
             unselectedLabelColor: Colors.black,
             onTap: (v) {},

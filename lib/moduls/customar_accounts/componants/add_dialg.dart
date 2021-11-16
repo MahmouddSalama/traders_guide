@@ -22,16 +22,12 @@ class _AddCustomarState extends State<AddCustomar> {
   bool loading = false;
   final _formkey = GlobalKey<FormState>();
   FocusNode _nameFocusNode = FocusNode();
-  FocusNode _idFocusNode = FocusNode();
   FocusNode _addressFocusNode = FocusNode();
-  FocusNode _moneyFocusNode = FocusNode();
   FocusNode _dateFocusNode = FocusNode();
   FocusNode _phoneFocusNode = FocusNode();
 
   final _nameControlle = TextEditingController();
-  final _idControlle = TextEditingController();
   final _addressControlle = TextEditingController();
-  final _moneyControlle = TextEditingController();
   final _dateControlle = TextEditingController();
   final _phoneControlle = TextEditingController();
 
@@ -52,24 +48,13 @@ class _AddCustomarState extends State<AddCustomar> {
                   children: [
                     DefaultTextField(
                       focusNode: _nameFocusNode,
-                      nextFocusNode: _idFocusNode,
+                      nextFocusNode: _phoneFocusNode,
                       textEditingController: _nameControlle,
                       textInputType: TextInputType.name,
                       hint: 'الاسم',
                       validetor: (v) {
                         if (v.toString().isEmpty || v.toString().length < 7)
                           return 'من فضلك ادخل اسم صحيح';
-                      },
-                    ),
-                    DefaultTextField(
-                      focusNode: _idFocusNode,
-                      nextFocusNode: _phoneFocusNode,
-                      textEditingController: _idControlle,
-                      textInputType: TextInputType.number,
-                      hint: 'رقم القومي',
-                      validetor: (v) {
-                        if (v.toString().isEmpty || v.toString().length != 14)
-                          return 'من فضلك ادخل رقم صحيح';
                       },
                     ),
                     DefaultTextField(
@@ -85,24 +70,13 @@ class _AddCustomarState extends State<AddCustomar> {
                     ),
                     DefaultTextField(
                       focusNode: _addressFocusNode,
-                      nextFocusNode: _moneyFocusNode,
+                      nextFocusNode: _dateFocusNode,
                       textEditingController: _addressControlle,
                       textInputType: TextInputType.text,
                       hint: 'عنوان',
                       validetor: (v) {
                         if (v.toString().isEmpty || v.toString().length == 10)
                           return 'من فضلك ادخل عنوان صحيح';
-                      },
-                    ),
-                    DefaultTextField(
-                      focusNode: _moneyFocusNode,
-                      nextFocusNode: _dateFocusNode,
-                      textEditingController: _moneyControlle,
-                      textInputType: TextInputType.number,
-                      hint: 'القيمة المالية',
-                      validetor: (v) {
-                        if (v.toString().isEmpty)
-                          return 'من فضلك ادخل رقم صحيح';
                       },
                     ),
                     GestureDetector(
@@ -149,17 +123,17 @@ class _AddCustomarState extends State<AddCustomar> {
       });
       await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid)
           .collection(widget.path)
-          .doc(_idControlle.value.text)
+          .doc()
           .set({
         'name': _nameControlle.value.text,
         'address': _addressControlle.value.text,
         'phoneNum': _phoneControlle.value.text,
-        'ip': _idControlle.value.text,
-        'money': _moneyControlle.value.text,
+        'initMoney':"0",
+        'money': "0",
         'time': _dateControlle.text,
         'createdAt': Timestamp.now(),
-        'rest':int.parse(_moneyControlle.text),
-        'archif': [],
+        'rest':0,
+        'payed':0,
       }).then((value) {
         setState(() {
           loading = false;
@@ -175,8 +149,8 @@ class _AddCustomarState extends State<AddCustomar> {
     picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now().add(Duration(days: 7)),
+      firstDate: DateTime.now().subtract(Duration(days: 365)),
+      lastDate: DateTime.now().add(Duration(days: 365)),
     );
     if (picked != null) {
       setState(() {

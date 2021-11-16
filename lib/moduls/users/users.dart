@@ -7,9 +7,6 @@ class UsersList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        actions: [
-
-        ],
         centerTitle: true,
         title: Text(
           'المستخدمين',
@@ -43,12 +40,32 @@ class UsersList extends StatelessWidget {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        leading: CircleAvatar(
-                          radius: 30,
-                          backgroundImage: NetworkImage(
-                            snapshot.data!.docs[index]['imageUrl']
-                          )
+                        leading: GestureDetector(
+                          onTap: (){
+                            showDialog(context: context, builder: (context){
+                              return AlertDialog(
+                                content: Container(
+                                  width: 200,
+                                  height: 250,
+                                  child: Image.network(snapshot.data!.docs[index]['imageUrl'],fit: BoxFit.fill,),
+                                ),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20)),
+                              );
+                            });
+                          },
+                          child: CircleAvatar(
+                            radius: 30,
+                            backgroundImage: NetworkImage(
+                              snapshot.data!.docs[index]['imageUrl']
+                            )
+                          ),
                         ),
+                        trailing: Text( snapshot.data!.docs[index]['bloked']?'فك الحظر':'حظر',style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                          color: Colors.grey
+                        ),),
                         onTap: () {
                           Navigator.push(
                               context, MaterialPageRoute(builder: (ctx) => UserInfo(id: snapshot.data!.docs[index].id,)));

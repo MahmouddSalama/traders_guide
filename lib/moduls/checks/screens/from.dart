@@ -9,7 +9,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class From extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,32 +18,20 @@ class From extends StatelessWidget {
           style: TextStyle(
               fontWeight: FontWeight.bold, fontSize: 25, color: Colors.black),
         ),
-        actions: [
-          IconButton(
-              onPressed: () {
-                Methods.Navplace(page: NotificationsScreen(), ctx: context);
-              },
-              icon: Icon(
-                Icons.notifications,
-              )),
-          // IconButton(
-          //     onPressed: () {},
-          //     icon: Icon(
-          //       Icons.search,
-          //     )),
-        ],
       ),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           child: StreamBuilder<QuerySnapshot>(
-            stream: FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid)
+            stream: FirebaseFirestore.instance
+                .collection('users')
+                .doc(FirebaseAuth.instance.currentUser!.uid)
                 .collection('checks')
-                .orderBy('createdAt',descending: true)
+                .orderBy('createdAt', descending: false)
                 .snapshots(),
             builder:
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-              try{
+              try {
                 final docs = snapshot.data!.docs;
                 if (snapshot.connectionState == ConnectionState.waiting)
                   return Center(child: CircularProgressIndicator());
@@ -55,47 +42,79 @@ class From extends StatelessWidget {
                     physics: BouncingScrollPhysics(),
                     itemBuilder: (ctx, index) {
                       return CheckCard(
+                        date: snapshot.data!.docs[index]['dueDate'] ,
                         id: snapshot.data!.docs[index].id,
                         name: snapshot.data!.docs[index]['from'],
                         index: index,
-                        delete: (){
-                          showDialog(context: ctx, builder:(ctx)=> AlertDialog(
-                            content:Text('هل تريد مسح العمل حقا ؟') ,
-                            actions: [
-                              TextButton(onPressed: (){
-                                FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid)
-                                    .collection("checks")
-                                    .doc("${snapshot.data!.docs[index].id}").delete();
-                              }, child: Text('نهم')),
-                              TextButton(onPressed: (){
-                                Navigator.pop(ctx);
-                              }, child: Text('لا'))
-                            ],
-                          ));
+                        delete: () {
+                          showDialog(
+                              context: ctx,
+                              builder: (ctx) => AlertDialog(
+                                    content: Text('هل تريد مسح العمل حقا ؟'),
+                                    actions: [
+                                      TextButton(
+                                          onPressed: () {
+                                            FirebaseFirestore.instance
+                                                .collection('users')
+                                                .doc(FirebaseAuth
+                                                    .instance.currentUser!.uid)
+                                                .collection("checks")
+                                                .doc(
+                                                    "${snapshot.data!.docs[index].id}")
+                                                .delete();
+                                            Navigator.pop(ctx);
+                                          },
+                                          child: Text('نعم')),
+                                      TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(ctx);
+                                          },
+                                          child: Text('لا'))
+                                    ],
+                                  ),
+                          );
                         },
                       );
                     },
                     itemCount: snapshot.data!.docs.length,
                   );
-                } else if (snapshot.data!.docs.length==0) {
+                } else if (snapshot.data!.docs.length == 0) {
                   return Center(
                     child: Text('لا يوجد شيكات'),
                   );
                 }
-              }catch(e){
-
-              }
-              return Center(child:CircularProgressIndicator());
-                },
+              } catch (e) {}
+              return Center(child: CircularProgressIndicator());
+            },
           ),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          showBottomSheet(context: context, builder: (context) => AddCheck());
-        },
-        child: Icon(Icons.add),
+      floatingActionButton: Builder(
+        builder: (ctx)=> FloatingActionButton(
+          onPressed: () async {
+            final user = await FirebaseFirestore.instance
+                .collection('users')
+                .doc(FirebaseAuth.instance.currentUser!.uid)
+                .get();
+            if (user['bloked'] == false) {
+              showBottomSheet(context: ctx, builder: (ctx) => AddCheck());
+            } else
+              ScaffoldMessenger.of(ctx).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    'لا يمكنك ان تقوم باي عمليه في الوقت الحالي ',
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.white,
+                    ),
+                  ),
+                  backgroundColor: Colors.blue,
+                ),
+              );
+          },
+          child: Icon(Icons.add),
+        ),
       ),
     );
   }

@@ -1,4 +1,3 @@
-import 'package:financial_dealings/moduls/customar_accounts/model/customer.dart';
 import 'package:financial_dealings/moduls/customar_accounts/screens/customar_information_screeen.dart';
 import 'package:financial_dealings/sherd/methods/method.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +7,6 @@ class CustomerCard extends StatelessWidget {
   final String id;
   final String name;
   final Function delete;
-  //final Customer customer;
   final String collision;
   final ColorsList = List.generate(32, (index) => Colors.primaries[index % 16]);
   final int rest;
@@ -20,8 +18,6 @@ class CustomerCard extends StatelessWidget {
     required this.index,
     required this.delete,
     required this.name,
-
-    //required this.customer,
     required this.collision,
   }) : super(key: key);
 
@@ -36,7 +32,9 @@ class CustomerCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(name),
-                Text('الباقي : $rest'),
+                Text('الباقي : $rest',style: TextStyle(
+                  color: rest>0?Colors.black:Colors.red,
+                ),),
               ],
             ),
             leading: CircleAvatar(
@@ -50,7 +48,6 @@ class CustomerCard extends StatelessWidget {
               ),
               onPressed: () => delete(),
             ),
-            onLongPress: () {},
             onTap: () {
               Methods.Navplace(
                 ctx: context,

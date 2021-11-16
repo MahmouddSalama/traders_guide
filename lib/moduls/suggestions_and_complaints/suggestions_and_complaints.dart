@@ -7,15 +7,8 @@ class SuggestionsAndComplaints extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'المقترحات و الشكتوي',
-          style: TextStyle(fontSize: 20, color: Colors.black),
-        ),
-        centerTitle: true,
-      ),
+      appBar: AppBar(),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('SuggestionsAndComplaints')
@@ -43,7 +36,6 @@ class SuggestionsAndComplaints extends StatelessWidget {
                           },
                           child: Container(
                             width: size.width,
-                            //height: size.height * .25,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(15),
                               color: Colors.white,
@@ -52,45 +44,52 @@ class SuggestionsAndComplaints extends StatelessWidget {
                             ),
                             child: Column(
                               children: [
-                                Container(
-                                  child: Column(
-                                    children: [
-                                      SizedBox(
-                                        height: 20,
-                                      ),
-                                      Text(
-                                        '${snapshot.data!.docs[index]['name']}',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.w600,
+                                Padding(
+                                  padding: const EdgeInsets.all(5),
+                                  child: Container(
+                                    child: Column(
+                                      children: [
+                                        SizedBox(
+                                          height: 20,
                                         ),
-                                      ),
-                                      Text(
-                                        '${snapshot.data!.docs[index]['supject']}',
-                                        style: TextStyle(
-                                          fontSize: 15,
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ],
+                                        buildRow(
+                                            text1: 'الاسم  : ',
+                                            text2: snapshot.data!.docs[index]
+                                                ['name']),
+                                        buildRow(
+                                            text1: 'الموضوع   : ',
+                                            text2:
+                                                '${snapshot.data!.docs[index]['supject']}')
+                                      ],
+                                    ),
+                                    height: 80,
+                                    alignment: Alignment.center,
                                   ),
-                                  height: 80,
-                                  alignment: Alignment.center,
                                 ),
                                 Divider(
-                                    thickness: 2,
-                                    color: Colors.black.withOpacity(.6)),
+                                  thickness: 2,
+                                  color: Colors.black.withOpacity(.6),
+                                ),
                                 Padding(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 10),
                                   child: Expanded(
-                                    child: Text(
-                                      '${snapshot.data!.docs[index]['message']}',
-                                      style: TextStyle(fontSize: 18),
-                                      maxLines: 4,
-                                      overflow: TextOverflow.ellipsis,
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          'محتوي الرسالة',
+                                          style: TextStyle(
+                                              fontSize: 18,
+                                              decoration:
+                                                  TextDecoration.underline),
+                                        ),
+                                        Text(
+                                          '${snapshot.data!.docs[index]['message']}',
+                                          style: TextStyle(fontSize: 18),
+                                          maxLines: 4,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 )
@@ -104,38 +103,28 @@ class SuggestionsAndComplaints extends StatelessWidget {
                         child: IconButton(
                           onPressed: () {
                             showDialog(
-                                context: ctx,
-                                builder: (ctx) => AlertDialog(
-                                      content: Text('هل تريد مسح المقترح حقا ؟'),
-                                      actions: [
-                                        TextButton(
-                                            onPressed: ()async {
-                                              var user=await FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser!.uid).get();
-                                              var userid =await FirebaseFirestore
-                                                  .instance
-                                                  .collection(
-                                                      "SuggestionsAndComplaints")
-                                                  .doc("${snapshot.data!.docs[index].id}").get();
-                                              if (userid['userId']==
-                                                  FirebaseAuth.instance
-                                                      .currentUser!.uid||user['admin']) {
-                                                FirebaseFirestore.instance
-                                                    .collection(
-                                                        "SuggestionsAndComplaints")
-                                                    .doc(
-                                                        "${snapshot.data!.docs[index].id}")
-                                                    .delete();
-                                                Navigator.pop(ctx);
-                                              }
-                                            },
-                                            child: Text('نعم')),
-                                        TextButton(
-                                            onPressed: () {
-                                              Navigator.pop(ctx);
-                                            },
-                                            child: Text('لا'))
-                                      ],
-                                    ));
+                              context: ctx,
+                              builder: (ctx) => AlertDialog(
+                                content: Text('هل تريد مسح المقترح حقا ؟'),
+                                actions: [
+                                  TextButton(
+                                      onPressed: () async {
+                                        var user = await FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser!.uid).get();
+                                        var userid = await FirebaseFirestore.instance.collection("SuggestionsAndComplaints").doc("${snapshot.data!.docs[index].id}").get();
+                                        if (userid['userId'] == FirebaseAuth.instance.currentUser!.uid) {
+                                          FirebaseFirestore.instance.collection("SuggestionsAndComplaints").doc("${snapshot.data!.docs[index].id}").delete();
+                                          Navigator.pop(ctx);
+                                        }
+                                      },
+                                      child: Text('نعم')),
+                                  TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(ctx);
+                                      },
+                                      child: Text('لا'))
+                                ],
+                              ),
+                            );
                           },
                           icon: Icon(
                             Icons.delete,
@@ -154,19 +143,43 @@ class SuggestionsAndComplaints extends StatelessWidget {
             }
           } catch (e) {}
           return Center(
-            child:
-            CircularProgressIndicator(),
+            child: CircularProgressIndicator(),
           );
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          showBottomSheet(
-              context: context, builder: (context) => SuggestionWidget());
-        },
-        child: Icon(Icons.add),
+      floatingActionButton: Builder(
+        builder:(ctx)=> FloatingActionButton(
+          onPressed: () {
+            showBottomSheet(
+                context: ctx, builder: (ctx) => SuggestionWidget());
+          },
+          child: Icon(Icons.add),
+        ),
       ),
+    );
+  }
+
+  Row buildRow({text1, text2}) {
+    return Row(
+      children: [
+        Text(
+          text1,
+          style: TextStyle(
+            fontSize: 16,
+            color: Colors.black,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        Text(
+          text2,
+          style: TextStyle(
+            fontSize: 16,
+            color: Colors.black,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
     );
   }
 }

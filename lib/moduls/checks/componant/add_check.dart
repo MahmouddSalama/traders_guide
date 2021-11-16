@@ -5,10 +5,6 @@ import 'package:financial_dealings/sherd/componant/default_text_fields.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-
-
-
-
 class AddCheck extends StatefulWidget {
   @override
   _AddCheckState createState() => _AddCheckState();
@@ -88,7 +84,7 @@ class _AddCheckState extends State<AddCheck> {
                             nextFocusNode: _dateOfPaymentFocusNode,
                             textEditingController: _dueDateControlle,
                             textInputType: TextInputType.phone,
-                            hint: 'المعاد الاستحقاق',
+                            hint: 'معاد الاستحقاق',
                             validetor: (v) {
                               if (v.toString().isEmpty)
                                 return 'من فضلك ادخل موعد صحيح';
@@ -104,10 +100,8 @@ class _AddCheckState extends State<AddCheck> {
                             focusNode: _dateOfPaymentFocusNode,
                             textEditingController: _dateOfPaymenControlle,
                             textInputType: TextInputType.phone,
-                            hint: 'المعاد السداد',
+                            hint: 'معاد السداد',
                             validetor: (v) {
-                              if (v.toString().isEmpty)
-                                return 'من فضلك ادخل موعد صحيح';
                             },
                           ),
                         ),
@@ -127,7 +121,8 @@ class _AddCheckState extends State<AddCheck> {
               ),
             ),
           ],
-        ));
+        )
+    );
   }
   _add()async{
    if(_formKey.currentState!.validate()) {
@@ -143,7 +138,7 @@ class _AddCheckState extends State<AddCheck> {
        'to':_toControlle.value.text ,
        'dueDate':_dueDateControlle.value.text ,
        'dateOfPayment':_dateOfPaymenControlle.value.text,
-       'createdAt': Timestamp.now(),
+       'createdAt': picked,
        'money':_moneyControlle.text,
        'paid':false ,
        'rejected ':false,
@@ -161,7 +156,7 @@ class _AddCheckState extends State<AddCheck> {
     picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
+      firstDate: DateTime.now().subtract(Duration(days: 50)),
       lastDate: DateTime.now().add(Duration(days: 365)),
     );
     if (picked != null) {

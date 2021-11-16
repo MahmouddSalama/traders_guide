@@ -1,14 +1,14 @@
 import 'package:financial_dealings/screens/auth/componant/texts.dart';
-import 'package:financial_dealings/screens/auth/forget_password/virification_code_screen.dart';
 import 'package:financial_dealings/sherd/componant/animaiton_background.dart';
 import 'package:financial_dealings/sherd/componant/default_button.dart';
 import 'package:financial_dealings/sherd/componant/default_text_fields.dart';
-import 'package:financial_dealings/sherd/methods/method.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ForgetPassScreen extends StatelessWidget {
 
-  final _phoneControlle = TextEditingController();
+  final _emailControlle = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -32,12 +32,12 @@ class ForgetPassScreen extends StatelessWidget {
                 SizedBox(height: 10),
                 SizedBox(height: 20),
                 DefaultTextField(
-                  textEditingController: _phoneControlle,
-                  textInputType: TextInputType.phone,
-                  hint: 'رقم الهاتف',
+                  textEditingController: _emailControlle,
+                  textInputType: TextInputType.emailAddress,
+                  hint: 'الاميل',
                   validetor: (v) {
-                    if (v.toString().isEmpty || v.toString().length != 11)
-                      return 'من فضلك ادخل رقم هاتف صحيح';
+                    if (v.toString().isEmpty&&!v.toString().contains('@'))
+                      return 'من فضلك ادخل اميل  صحيح';
                   },
                 ),
                 SizedBox(height: 30),
@@ -47,17 +47,17 @@ class ForgetPassScreen extends StatelessWidget {
                   child: DefaultButton(
                     function: () {
                       FocusScope.of(context).unfocus();
-                      _forgetPass();
+                     _forgetPass(context);
+                      Navigator.pop(context);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           elevation: 15,
                           backgroundColor: Colors.white,
-                          content: Text('سيتم ارسال رقم تاكيد في رساله علي هذا الرقم ',style: TextStyle(
+                          content: Text('سوف تقم بعمل كلمه مرور جديده',style: TextStyle(
                             color: Colors.blue,
                           ),),
                         ),
                       );
-                      Methods.NavReplace(ctx: context,page: VirificationCodeScreen());
                     },
                     text: 'ارسال',
                   ),
@@ -70,7 +70,10 @@ class ForgetPassScreen extends StatelessWidget {
     );
   }
 
-  _forgetPass() {
-    //print("_forgetPassControll.value.text ${_forgetPassControll.value.text}");
+  _forgetPass(ctx)async {
+   await FirebaseAuth.instance.sendPasswordResetEmail(email: _emailControlle.text);
+   Future.delayed(Duration(seconds: 2),(){
+     Navigator.pop(ctx);
+   });
   }
 }

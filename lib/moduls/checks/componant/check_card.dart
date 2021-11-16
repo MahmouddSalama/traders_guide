@@ -6,12 +6,13 @@ import 'package:flutter/material.dart';
 class CheckCard extends StatelessWidget {
   final id;
   final name;
-
+  final date;
   final index;
   final Function delete;
   final ColorsList = List.generate(32, (index) => Colors.primaries[index % 16]);
 
   CheckCard({
+    required this.date,
     Key? key,
     required this.index,
     required this.delete,
@@ -31,10 +32,11 @@ class CheckCard extends StatelessWidget {
               radius: 30,
               backgroundColor: ColorsList[index],
             ),
+            subtitle: Text(date),
             trailing: IconButton(
               icon: Icon(
                 Icons.delete,
-                color: Colors.red,
+                color: ColorsList[index],
               ),
               onPressed: () => delete(),
             ),
