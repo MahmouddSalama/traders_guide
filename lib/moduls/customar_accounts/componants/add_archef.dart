@@ -105,7 +105,7 @@ class _AddArchefState extends State<AddArchef> {
                             ),
                             Text('وارد',style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 18
+                                fontSize: 25
                             ),),
                           ],
                         ),
@@ -123,7 +123,7 @@ class _AddArchefState extends State<AddArchef> {
                             ),
                             Text('صادر',style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 18
+                                fontSize: 25
                             ),),
                           ],
                         ),
@@ -133,7 +133,6 @@ class _AddArchefState extends State<AddArchef> {
                       text: 'اضافه',
                       function: () {
                         _add();
-
                       },
                     )
                   ],

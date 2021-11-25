@@ -50,7 +50,7 @@ class SuggestionsAndComplaints extends StatelessWidget {
                                     child: Column(
                                       children: [
                                         SizedBox(
-                                          height: 20,
+                                          height: 5,
                                         ),
                                         buildRow(
                                             text1: 'الاسم  : ',
@@ -62,8 +62,6 @@ class SuggestionsAndComplaints extends StatelessWidget {
                                                 '${snapshot.data!.docs[index]['supject']}')
                                       ],
                                     ),
-                                    height: 80,
-                                    alignment: Alignment.center,
                                   ),
                                 ),
                                 Divider(
@@ -71,24 +69,31 @@ class SuggestionsAndComplaints extends StatelessWidget {
                                   color: Colors.black.withOpacity(.6),
                                 ),
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10),
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 5),
                                   child: Expanded(
                                     child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.stretch,
                                       children: [
-                                        Text(
-                                          'محتوي الرسالة',
-                                          style: TextStyle(
-                                              fontSize: 18,
-                                              decoration:
-                                                  TextDecoration.underline),
+                                        Center(
+                                          child: Text(
+                                            'محتوي الرسالة',
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                decoration:
+                                                    TextDecoration.underline),
+                                          ),
                                         ),
                                         Text(
                                           '${snapshot.data!.docs[index]['message']}',
-                                          style: TextStyle(fontSize: 18),
+                                          style: TextStyle(fontSize: 17),
                                           maxLines: 4,
                                           overflow: TextOverflow.ellipsis,
                                         ),
+                                        SizedBox(
+                                          height: 5,
+                                        )
                                       ],
                                     ),
                                   ),
@@ -101,7 +106,14 @@ class SuggestionsAndComplaints extends StatelessWidget {
                       Align(
                         alignment: Alignment(-1, -1),
                         child: IconButton(
-                          onPressed: () {
+                          onPressed: ()async {
+                            var user = await FirebaseFirestore
+                                .instance
+                                .collection("users")
+                                .doc(FirebaseAuth
+                                .instance.currentUser!.uid)
+                                .get();
+                            if (user['admin'])
                             showDialog(
                               context: ctx,
                               builder: (ctx) => AlertDialog(
@@ -109,12 +121,13 @@ class SuggestionsAndComplaints extends StatelessWidget {
                                 actions: [
                                   TextButton(
                                       onPressed: () async {
-                                        var user = await FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser!.uid).get();
-                                        var userid = await FirebaseFirestore.instance.collection("SuggestionsAndComplaints").doc("${snapshot.data!.docs[index].id}").get();
-                                        if (userid['userId'] == FirebaseAuth.instance.currentUser!.uid) {
-                                          FirebaseFirestore.instance.collection("SuggestionsAndComplaints").doc("${snapshot.data!.docs[index].id}").delete();
+                                          FirebaseFirestore.instance
+                                              .collection(
+                                                  "SuggestionsAndComplaints")
+                                              .doc(
+                                                  "${snapshot.data!.docs[index].id}")
+                                              .delete();
                                           Navigator.pop(ctx);
-                                        }
                                       },
                                       child: Text('نعم')),
                                   TextButton(
@@ -146,16 +159,6 @@ class SuggestionsAndComplaints extends StatelessWidget {
             child: CircularProgressIndicator(),
           );
         },
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
-      floatingActionButton: Builder(
-        builder:(ctx)=> FloatingActionButton(
-          onPressed: () {
-            showBottomSheet(
-                context: ctx, builder: (ctx) => SuggestionWidget());
-          },
-          child: Icon(Icons.add),
-        ),
       ),
     );
   }

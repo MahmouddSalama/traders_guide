@@ -53,7 +53,7 @@ class _AddCustomarState extends State<AddCustomar> {
                       textInputType: TextInputType.name,
                       hint: 'الاسم',
                       validetor: (v) {
-                        if (v.toString().isEmpty || v.toString().length < 7)
+                        if (v.toString().isEmpty)
                           return 'من فضلك ادخل اسم صحيح';
                       },
                     ),
@@ -75,7 +75,7 @@ class _AddCustomarState extends State<AddCustomar> {
                       textInputType: TextInputType.text,
                       hint: 'عنوان',
                       validetor: (v) {
-                        if (v.toString().isEmpty || v.toString().length == 10)
+                        if (v.toString().isEmpty )
                           return 'من فضلك ادخل عنوان صحيح';
                       },
                     ),
@@ -105,7 +105,7 @@ class _AddCustomarState extends State<AddCustomar> {
                             function: () {
                               _add();
                             },
-                          )
+                    ),
                   ],
                 ),
               ),

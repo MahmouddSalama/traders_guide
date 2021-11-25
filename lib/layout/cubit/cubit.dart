@@ -9,7 +9,8 @@ import 'package:financial_dealings/layout/cubit/stats.dart';
 import 'package:financial_dealings/layout/main_layout.dart';
 import 'package:financial_dealings/moduls/blck_list_admin/admin_blak_list.dart';
 import 'package:financial_dealings/moduls/chats/screens/chat_screen.dart';
-import 'package:financial_dealings/moduls/suggestions_and_complaints/suggestions_and_complaints.dart';
+import 'package:financial_dealings/moduls/suggestions_and_complaints/screens/user_suggest.dart';
+import '../../moduls/suggestions_and_complaints/screens/suggestions_and_complaints.dart';
 import 'package:financial_dealings/moduls/users/users.dart';
 import 'package:financial_dealings/screens/mainScreen/main_screen.dart';
 import '../../moduls/blac_list/black_list.dart';
@@ -40,7 +41,12 @@ class NewsCubit extends Cubit<NewsSates> {
       label: 'الدردشات',
     ),
   ];
-  List screens = [
+  List screensUser = [
+    MainScreen(),
+    UserSuggest(),
+    Chats(),
+  ];
+  List screenAdmin = [
     MainScreen(),
     SuggestionsAndComplaints(),
     Chats(),

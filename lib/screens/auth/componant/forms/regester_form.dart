@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:financial_dealings/inner_screens/info.dart';
 import 'package:financial_dealings/layout/main_layout.dart';
 import 'package:financial_dealings/sherd/componant/default_button.dart';
 import 'package:financial_dealings/sherd/componant/default_text_fields.dart';
@@ -9,6 +10,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+
+import '../texts.dart';
 
 class RegisterForm extends StatefulWidget {
   @override
@@ -20,6 +23,7 @@ class _RegisterFormState extends State<RegisterForm> {
   bool obsecure = true;
   final _formKey = GlobalKey<FormState>();
   bool loading = false;
+  bool isChecked = false;
 
   // TextEditingController
   final _emailControlle = TextEditingController();
@@ -47,227 +51,267 @@ class _RegisterFormState extends State<RegisterForm> {
     _idControlle.dispose();
     super.dispose();
   }
-
+  Color getColor(Set<MaterialState> states) {
+    const Set<MaterialState> interactiveStates = <MaterialState>{
+      MaterialState.pressed,
+      MaterialState.hovered,
+      MaterialState.focused,
+    };
+    if (states.any(interactiveStates.contains)) {
+      return Colors.white;
+    }
+    return Colors.blueAccent;
+  }
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return  Form(
-        key: _formKey,
-        child: Column(
-          children: [
-            Row(
-              children: [
-                Flexible(
-                  flex: 3,
-                  child: DefaultTextField(
-                    textInputType: TextInputType.emailAddress,
-                    focusNode: _emailFocusNode,
-                    nextFocusNode: _phoneFocusNode,
-                    textEditingController: _emailControlle,
-                    hint: 'الاميل',
-                    validetor: (v) {
-                      if (v.toString().isEmpty || !v.toString().contains("@"))
-                        return 'ادخل اميل صحيح';
-                    },
-                  ),
+    return Form(
+      key: _formKey,
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Flexible(
+                flex: 3,
+                child: DefaultTextField(
+                  textInputType: TextInputType.emailAddress,
+                  focusNode: _emailFocusNode,
+                  nextFocusNode: _phoneFocusNode,
+                  textEditingController: _emailControlle,
+                  hint: 'الاميل',
+                  validetor: (v) {
+                    if (v.toString().isEmpty || !v.toString().contains("@"))
+                      return 'ادخل اميل صحيح';
+                  },
                 ),
-                Flexible(
-                  flex: 1,
-                  child: GestureDetector(
-                    onTap: () => _showPhotoDialog(),
-                    child: Stack(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(5.0),
-                          child: Container(
-                            height: 80,
-                            width: 100,
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(25),
-                                border: Border.all(color: Colors.blueAccent)),
-                            child: image == null
-                                ? Icon(
-                                    Icons.person_sharp,
-                                    size: 50,
-                                  )
-                                : ClipRRect(
-                                    child: Image.file(
-                                      image!,
-                                      fit: BoxFit.fill,
-                                    ),
-                                    borderRadius: BorderRadius.circular(25),
-                                  ),
-                          ),
-                        ),
-                        Align(
-                          alignment: Alignment.topRight,
-                          child: CircleAvatar(
-                            radius: 20,
-                            backgroundColor: Colors.blueAccent,
-                            child: Icon(
-                              image == null ? Icons.camera_alt : Icons.edit,
+              ),
+              Flexible(
+                flex: 1,
+                child: GestureDetector(
+                  onTap: () => _showPhotoDialog(),
+                  child: Stack(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: Container(
+                          height: 80,
+                          width: 100,
+                          decoration: BoxDecoration(
                               color: Colors.white,
-                            ),
+                              borderRadius: BorderRadius.circular(25),
+                              border: Border.all(color: Colors.blueAccent)),
+                          child: image == null
+                              ? Icon(
+                                  Icons.person_sharp,
+                                  size: 50,
+                                )
+                              : ClipRRect(
+                                  child: Image.file(
+                                    image!,
+                                    fit: BoxFit.fill,
+                                  ),
+                                  borderRadius: BorderRadius.circular(25),
+                                ),
+                        ),
+                      ),
+                      Align(
+                        alignment: Alignment.topRight,
+                        child: CircleAvatar(
+                          radius: 20,
+                          backgroundColor: Colors.blueAccent,
+                          child: Icon(
+                            image == null ? Icons.camera_alt : Icons.edit,
+                            color: Colors.white,
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            ),
-            SizedBox(height: 10),
-            DefaultTextField(
-              textInputType: TextInputType.phone,
-              focusNode: _phoneFocusNode,
-              nextFocusNode: _idFocusNode,
-              textEditingController: _phoneControlle,
-              hint: 'رقم الهاتف',
-              validetor: (v) {
-                if (v.toString().isEmpty || v.toString().length != 11)
-                  return 'أدخل رقم هاتف صحيح';
+              ),
+            ],
+          ),
+          SizedBox(height: 10),
+          DefaultTextField(
+            textInputType: TextInputType.phone,
+            focusNode: _phoneFocusNode,
+            nextFocusNode: _idFocusNode,
+            textEditingController: _phoneControlle,
+            hint: 'رقم الهاتف',
+            validetor: (v) {
+              if (v.toString().isEmpty || v.toString().length != 11)
+                return 'أدخل رقم هاتف صحيح';
+            },
+          ),
+          SizedBox(height: 10),
+          DefaultTextField(
+            textInputType: TextInputType.number,
+            focusNode: _idFocusNode,
+            nextFocusNode: _fullnameFocusNode,
+            textEditingController: _idControlle,
+            hint: 'رقم القومي',
+            validetor: (v) {
+              if (v.toString().isEmpty || v.toString().length != 14)
+                return 'أدخل رقم القومي صحيح';
+            },
+          ),
+          SizedBox(height: 10),
+          DefaultTextField(
+            focusNode: _fullnameFocusNode,
+            nextFocusNode: _passFocusNode,
+            textEditingController: _nameControlle,
+            hint: 'الاسم',
+            validetor: (v) {
+              if (v.toString().isEmpty) return 'ادخل اسم صحيح';
+            },
+          ),
+          SizedBox(height: 10),
+          DefaultTextField(
+            textInputType: TextInputType.visiblePassword,
+            focusNode: _passFocusNode,
+            nextFocusNode: _rePassFocusNode,
+            textEditingController: _passControlle,
+            hint: 'كلمة مرور',
+            validetor: (v) {
+              if (v.toString().isEmpty || v.toString().length < 7)
+                return 'يجب علي كلمة المرور ان لا تقل عن 7 احرف';
+            },
+            isPass: obsecure,
+            sufix: IconButton(
+              onPressed: () {
+                setState(() {
+                  obsecure = !obsecure;
+                });
               },
-            ),
-            SizedBox(height: 10),
-            DefaultTextField(
-              textInputType: TextInputType.number,
-              focusNode: _idFocusNode,
-              nextFocusNode: _fullnameFocusNode,
-              textEditingController: _idControlle,
-              hint: 'رقم القومي',
-              validetor: (v) {
-                if (v.toString().isEmpty || v.toString().length != 14)
-                  return 'أدخل رقم القومي صحيح';
-              },
-            ),
-            SizedBox(height: 10),
-            DefaultTextField(
-              focusNode: _fullnameFocusNode,
-              nextFocusNode: _passFocusNode,
-              textEditingController: _nameControlle,
-              hint: 'الاسم',
-              validetor: (v) {
-                if (v.toString().isEmpty) return 'ادخل اسم صحيح';
-              },
-            ),
-            SizedBox(height: 10),
-            DefaultTextField(
-              textInputType: TextInputType.visiblePassword,
-              focusNode: _passFocusNode,
-              nextFocusNode: _rePassFocusNode,
-              textEditingController: _passControlle,
-              hint: 'كلمة مرور',
-              validetor: (v) {
-                if (v.toString().isEmpty || v.toString().length < 7)
-                  return 'يجب علي كلمة المرور ان لا تقل عن 7 احرف';
-              },
-              isPass: obsecure,
-              sufix: IconButton(
-                onPressed: () {
-                  setState(() {
-                    obsecure = !obsecure;
-                  });
-                },
-                icon: Icon(
-                  obsecure ? Icons.visibility : Icons.visibility_off,
-                  color: Colors.white,
-                ),
+              icon: Icon(
+                obsecure ? Icons.visibility : Icons.visibility_off,
+                color: Colors.white,
               ),
             ),
-            SizedBox(height: 10),
-            DefaultTextField(
-              textInputType: TextInputType.visiblePassword,
-              focusNode: _rePassFocusNode,
-              textEditingController: _rePassControlle,
-              hint: 'تأكيد كلمة المرور',
-              validetor: (v) {
-                if ((v.toString().isEmpty || v.toString().length < 7) &&
-                    (_passControlle.value.text.toString() !=
-                        _rePassControlle.value.text.toString()))
-                  return 'ليست تأكيد لكلمة المرور';
+          ),
+          SizedBox(height: 10),
+          DefaultTextField(
+            textInputType: TextInputType.visiblePassword,
+            focusNode: _rePassFocusNode,
+            textEditingController: _rePassControlle,
+            hint: 'تأكيد كلمة المرور',
+            validetor: (v) {
+              if ((v.toString().isEmpty || v.toString().length < 7) &&
+                  (_passControlle.value.text.toString() !=
+                      _rePassControlle.value.text.toString()))
+                return 'ليست تأكيد لكلمة المرور';
+            },
+            isPass: obsecure,
+            sufix: IconButton(
+              onPressed: () {
+                setState(() {
+                  obsecure = !obsecure;
+                });
               },
-              isPass: obsecure,
-              sufix: IconButton(
-                onPressed: () {
-                  setState(() {
-                    obsecure = !obsecure;
-                  });
-                },
-                icon: Icon(
-                  obsecure ? Icons.visibility : Icons.visibility_off,
-                  color: Colors.white,
-                ),
+              icon: Icon(
+                obsecure ? Icons.visibility : Icons.visibility_off,
+                color: Colors.white,
               ),
             ),
-            SizedBox(height: 50),
-            loading
-                ? CircularProgressIndicator()
-                : DefaultButton(
-                    text: 'انشاء الحساب',
-                    iconData: null,
-                    function: () {
-                      _submit(context);
-                    },
-                  ),
-          ],
-        ),
+          ),
+          SizedBox(height: 10),
+          Row(
+            children: [
+              Checkbox(
+                fillColor: MaterialStateProperty.resolveWith(getColor),
+                checkColor: Colors.white,
+                value: isChecked,
+                onChanged: (bool? value) {
+                  setState(() {
+                    isChecked = value!;
+                  });
+                },
+              ),
+              TogelText(
+                qustion: 'موافق علي ',
+                operation: 'سياسة الخصوصيه',
+                function:(){
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => InFo(pdfPath: 'assets/pdfs/2.pdf',title:'شروط الخدمه',)));
+                },
+              ),
+            ],
+          ),
+          SizedBox(height: 30),
+          loading
+              ? CircularProgressIndicator()
+              : DefaultButton(
+                  text: 'انشاء الحساب',
+                  iconData: null,
+                  function: () {
+                    _submit(context);
+                  },
+                ),
+        ],
+      ),
     );
   }
 
   void _submit(BuildContext ctx) async {
-    String error='';
-    if(_formKey.currentState!.validate()) {
-      if(image==null){
-        return _showErrorDialog('no image sellcted');
+    String error = '';
+    if (_formKey.currentState!.validate()){
+      if (image == null) {
+        return _showErrorDialog('يجب اختيار صوره');
+      }
+      if (isChecked == false) {
+        return _showErrorDialog('يجب الموافقه علي القواعد و الشروط');
       }
       setState(() {
-        loading=true;
+        loading = true;
       });
       try {
-        UserCredential userCredential = await FirebaseAuth.instance
-            .createUserWithEmailAndPassword(
+        UserCredential userCredential =
+            await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: _emailControlle.text.toLowerCase().trim(),
           password: _passControlle.text.trim(),
         );
-        final User?  user= userCredential.user;
-        final uid=user!.uid;
+        final User? user = userCredential.user;
+        final uid = user!.uid;
         final ref = FirebaseStorage.instance
             .ref()
             .child('userImages')
             .child(uid + '.jpg');
         await ref.putFile(image!);
-        final  url = await ref.getDownloadURL();
-        await  FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).set({
-          'id':FirebaseAuth.instance.currentUser!.uid,
-          'name':_nameControlle.text,
-          'email':_emailControlle.text,
-          'imageUrl':url,
-          'phoneNum':_phoneControlle.text,
-          'ip':_idControlle.text,
-          'createdAt':Timestamp.now(),
-          'admin':false,
-          'bloked':false
+        final url = await ref.getDownloadURL();
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .set({
+          'id': FirebaseAuth.instance.currentUser!.uid,
+          'name': _nameControlle.text,
+          'email': _emailControlle.text,
+          'imageUrl': url,
+          'phoneNum': _phoneControlle.text,
+          'ip': _idControlle.text,
+          'createdAt': Timestamp.now(),
+          'admin': false,
+          'bloked': false,
+          'password':_passControlle.text,
         });
-        Navigator.canPop(context)?Navigator.pop(context):null;
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (ctx)=>MainLayout()));
+        Navigator.canPop(context) ? Navigator.pop(context) : null;
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (ctx) => MainLayout()));
       } on FirebaseAuthException catch (e) {
         setState(() {
-          loading=false;
+          loading = false;
         });
         if (e.code == 'weak-password') {
-          error='The password provided is too weak.';
+          error = 'The password provided is too weak.';
         } else if (e.code == 'email-already-in-use') {
-          error='The account already exists for that email.';
+          error = 'The account already exists for that email.';
         }
         _showErrorDialog('error is${e.toString()}');
-
       } catch (e) {
         print(e);
       }
     }
     setState(() {
-      loading=false;
+      loading = false;
     });
   }
 

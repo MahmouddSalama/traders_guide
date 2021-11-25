@@ -59,6 +59,8 @@ class _BlackListScreenState extends State<BlackListScreen> {
                     itemBuilder: (context, index) {
                       return BlackListItem(
                         delete: () async {
+                          var user=await FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser!.uid).get();
+                          if (user['admin'])
                           showDialog(
                               context: context,
                               builder: (ctx) => AlertDialog(
@@ -66,18 +68,14 @@ class _BlackListScreenState extends State<BlackListScreen> {
                                     actions: [
                                       TextButton(
                                           onPressed: () async {
-                                            var userid = await FirebaseFirestore.instance.collection("blacklist").doc("${snapshot.data!.docs[index].id}").get();
                                             var user=await FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser!.uid).get();
-                                            if (userid['userId'] ==
-                                                FirebaseAuth
-                                                    .instance.currentUser!.uid||user['admin']) {
                                               await FirebaseFirestore.instance
                                                   .collection("blacklist")
                                                   .doc(
                                                       "${snapshot.data!.docs[index].id}")
                                                   .delete();
                                               Navigator.pop(ctx);
-                                            }
+
                                           },
                                           child: Text('نعم')),
                                       TextButton(
@@ -86,7 +84,8 @@ class _BlackListScreenState extends State<BlackListScreen> {
                                           },
                                           child: Text('لا'))
                                     ],
-                                  ));
+                                  ),
+                          );
                         },
                         id: snapshot.data!.docs[index].id,
                       );

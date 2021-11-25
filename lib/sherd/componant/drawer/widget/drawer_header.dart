@@ -11,8 +11,10 @@ class MyDrawerHeader extends StatelessWidget {
         ),
         child: Column(
           children: [
-            Flexible(
-              child: Image.asset('assets/images/pngwing.com.png')
+            Container(
+              height: 90,
+              width: 120,
+              child: Image.asset('assets/images/shepl logo.png',fit: BoxFit.fill,)
             ),
             SizedBox(height: 10),
             Flexible(

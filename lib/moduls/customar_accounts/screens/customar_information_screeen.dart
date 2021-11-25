@@ -35,7 +35,9 @@ class _CustomerInformationState extends State<CustomerInformation> {
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
+    Size size = MediaQuery
+        .of(context)
+        .size;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: widget.color,
@@ -56,60 +58,62 @@ class _CustomerInformationState extends State<CustomerInformation> {
             builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
               try {
                 final docs = snapshot.data!.docs
-                    .firstWhere((element) => element.id.toString() == widget.id);
+                    .firstWhere((element) =>
+                element.id.toString() == widget.id);
                 if (snapshot.connectionState == ConnectionState.waiting)
                   return Center(child: CircularProgressIndicator());
                 else if (snapshot.hasError)
                   return Text("error");
                 else if (snapshot.hasData && snapshot.data!.docs.length != 0) {
-                  var cutomerData= FirebaseFirestore.instance
+                  var cutomerData = FirebaseFirestore.instance
                       .collection('users')
                       .doc(FirebaseAuth
                       .instance.currentUser!.uid)
                       .collection(widget.collision)
                       .doc(widget.id);
                   return Align(
-                     alignment: Alignment.bottomCenter,
+                    alignment: Alignment.bottomCenter,
                     child: Expanded(
                       child: Container(
                         height: size.height - size.height * .15,
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius:
-                              BorderRadius.vertical(top: Radius.circular(30)),
+                          BorderRadius.vertical(top: Radius.circular(30)),
                         ),
                         //height: size.height * .75,
                         child: Padding(
                           padding:
-                              EdgeInsets.only(top: 10, right: 20, left: 20),
+                          EdgeInsets.only(top: 10, right: 20, left: 20),
                           child: Column(
                             children: [
                               buildColumn(
-                                edit: true,
+                                  edit: true,
                                   text1: 'الاسم :  ', text2: docs['name'],
-                              function: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return buildAlertDialog(size, context,
-                                        lable: 'الاسم',
-                                        function: () async {
-                                          await cutomerData
-                                              .update({
-                                            'name': textEditingController1.text,
-                                          },
-                                          );
-                                          textEditingController1.clear();
-                                          Navigator.pop(context);
-                                        },
-                                        textEditingController: textEditingController1);
-                                  },
-                                );
-                               }
-                                ),
+                                  function: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return buildAlertDialog(size, context,
+                                            lable: 'الاسم',
+                                            function: () async {
+                                              await cutomerData
+                                                  .update({
+                                                'name': textEditingController1
+                                                    .text,
+                                              },
+                                              );
+                                              textEditingController1.clear();
+                                              Navigator.pop(context);
+                                            },
+                                            textEditingController: textEditingController1);
+                                      },
+                                    );
+                                  }
+                              ),
 
                               buildColumn(
-                                edit: true,
+                                  edit: true,
                                   text1: 'رقم الهاتف :  ',
                                   text2: docs['phoneNum'],
                                   function: () {
@@ -122,7 +126,8 @@ class _CustomerInformationState extends State<CustomerInformation> {
                                             function: () async {
                                               await cutomerData
                                                   .update({
-                                                'phoneNum': textEditingController1.text,
+                                                'phoneNum': textEditingController1
+                                                    .text,
                                               },
                                               );
                                               textEditingController1.clear();
@@ -134,7 +139,7 @@ class _CustomerInformationState extends State<CustomerInformation> {
                                   }
                               ),
                               buildColumn(
-                                edit: true,
+                                  edit: true,
                                   text1: ' العنوان :  ',
                                   text2: docs['address'],
                                   function: () {
@@ -146,7 +151,8 @@ class _CustomerInformationState extends State<CustomerInformation> {
                                             function: () async {
                                               await cutomerData
                                                   .update({
-                                                'address': textEditingController1.text,
+                                                'address': textEditingController1
+                                                    .text,
                                               },
                                               );
                                               textEditingController1.clear();
@@ -158,14 +164,15 @@ class _CustomerInformationState extends State<CustomerInformation> {
                                   }),
                               // buildColumn(text1: 'المبلغ :  ', text2: '${docs['money']} ج'),
                               buildColumn(
-                                edit: true,
+                                  edit: true,
                                   text1: 'المعاد :  ', text2: docs['time'],
-                                  function: ()async {
-                                    await  pickedDialog(field: 'time');
+                                  function: () async {
+                                    await pickedDialog(field: 'time');
                                   }),
                               buildColumn(
                                   edit: false,
-                                  text1: 'إجمالي الصادر :  ', text2: docs['money']),
+                                  text1: 'إجمالي الصادر :  ',
+                                  text2: docs['money']),
                               buildColumn(
                                   edit: false,
                                   text1: 'اجمالي الوارد :  ',
@@ -173,17 +180,20 @@ class _CustomerInformationState extends State<CustomerInformation> {
                               buildColumn(
                                   edit: false,
                                   text1: 'اجمالي الباقي :  ',
-                                  text2: docs['rest'].toString()),
+                                  text2: docs['rest'].toString(),
+                              x:docs['rest'] ),
                               SizedBox(height: 20,),
                               DefaultButton(
-                                function: (){
-                                  Navigator.push(context, MaterialPageRoute(builder: (_)=>DataArchifScreen(
-                                    payed: "",
-                                    money:"" ,
-                                    rest:"",
-                                    id:widget.id,
-                                    colliction: widget.collision,
-                                  )));
+                                function: () {
+                                  Navigator.push(
+                                      context, MaterialPageRoute(builder: (_) =>
+                                      DataArchifScreen(
+                                        payed: "",
+                                        money: "",
+                                        rest: "",
+                                        id: widget.id,
+                                        colliction: widget.collision,
+                                      )));
                                 },
                                 text: 'البيانات',
                               )
@@ -209,8 +219,8 @@ class _CustomerInformationState extends State<CustomerInformation> {
 
   AlertDialog buildAlertDialog(Size size, ctx,
       {required Function function,
-      required TextEditingController textEditingController,required String lable,
-      textinput= TextInputType.text
+        required TextEditingController textEditingController, required String lable,
+        textinput = TextInputType.text
       }) {
     return AlertDialog(
       shape: RoundedRectangleBorder(
@@ -247,21 +257,24 @@ class _CustomerInformationState extends State<CustomerInformation> {
     );
   }
 
-  Column buildColumn({required text1, required text2, function,required bool edit}) {
+  Column buildColumn(
+      {required text1, required text2, function, required bool edit, int x=1,}) {
     return Column(
       children: [
         Row(
           children: [
             Text(
               text1,
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+              style: TextStyle(
+                  fontSize: 15, fontWeight: FontWeight.w500,
+                  color:x>0?Colors.black:Colors.red),
             ),
             Text(
               text2,
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500,color:x>0?Colors.black:Colors.red),
             ),
             Spacer(),
-            edit?
+            edit ?
             IconButton(
               onPressed: () {
                 function();
@@ -270,7 +283,7 @@ class _CustomerInformationState extends State<CustomerInformation> {
                 Icons.edit,
                 color: Colors.blue,
               ),
-            ):SizedBox()
+            ) : SizedBox()
           ],
         ),
         Divider(
@@ -280,8 +293,10 @@ class _CustomerInformationState extends State<CustomerInformation> {
       ],
     );
   }
+
   DateTime? picked;
-  pickedDialog({required String field} ) async {
+
+  pickedDialog({required String field}) async {
     picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -299,7 +314,6 @@ class _CustomerInformationState extends State<CustomerInformation> {
         field: '${picked!.year}-${picked!.month}-${picked!.day}',
       },
       );
-
     }
   }
 }

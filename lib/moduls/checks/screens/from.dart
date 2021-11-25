@@ -89,29 +89,11 @@ class From extends StatelessWidget {
           ),
         ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
       floatingActionButton: Builder(
         builder: (ctx)=> FloatingActionButton(
-          onPressed: () async {
-            final user = await FirebaseFirestore.instance
-                .collection('users')
-                .doc(FirebaseAuth.instance.currentUser!.uid)
-                .get();
-            if (user['bloked'] == false) {
+          onPressed: ()  {
               showBottomSheet(context: ctx, builder: (ctx) => AddCheck());
-            } else
-              ScaffoldMessenger.of(ctx).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    'لا يمكنك ان تقوم باي عمليه في الوقت الحالي ',
-                    style: TextStyle(
-                      fontSize: 20,
-                      color: Colors.white,
-                    ),
-                  ),
-                  backgroundColor: Colors.blue,
-                ),
-              );
           },
           child: Icon(Icons.add),
         ),

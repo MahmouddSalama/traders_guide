@@ -5,7 +5,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Creditors extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -13,20 +12,21 @@ class Creditors extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           child: StreamBuilder<QuerySnapshot>(
-            stream: FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid)
+            stream: FirebaseFirestore.instance
+                .collection('users')
+                .doc(FirebaseAuth.instance.currentUser!.uid)
                 .collection('Creditcustomers')
                 .orderBy('createdAt')
                 .snapshots(),
-            builder: (BuildContext context,
-                AsyncSnapshot<QuerySnapshot> snapshot) {
+            builder:
+                (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
               try {
                 final docs = snapshot.data!.docs;
                 if (snapshot.connectionState == ConnectionState.waiting)
                   return Center(child: CircularProgressIndicator());
                 else if (snapshot.hasError)
                   return Text("error");
-                else if (snapshot.hasData &&
-                    snapshot.data!.docs.length != 0) {
+                else if (snapshot.hasData && snapshot.data!.docs.length != 0) {
                   return ListView.builder(
                     physics: BouncingScrollPhysics(),
                     itemBuilder: (ctx, index) {
@@ -36,21 +36,31 @@ class Creditors extends StatelessWidget {
                         id: snapshot.data!.docs[index].id,
                         name: snapshot.data!.docs[index]['name'].toString(),
                         delete: () {
-                          showDialog(context: ctx, builder:(ctx)=> AlertDialog(
-                            content:Text('هل تريد مسح العميل حقا ؟') ,
-                            actions: [
-                              TextButton(onPressed: ()async {
-                                FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid)
-                                    .collection("Creditcustomers")
-                                    .doc(snapshot.data!.docs[index].id)
-                                    .delete();
-                                Navigator.pop(ctx);
-                              }, child: Text('نعم')),
-                              TextButton(onPressed: (){
-                                Navigator.pop(ctx);
-                              }, child: Text('لا'))
-                            ],
-                          ));
+                          showDialog(
+                              context: ctx,
+                              builder: (ctx) => AlertDialog(
+                                    content: Text('هل تريد مسح العميل حقا ؟'),
+                                    actions: [
+                                      TextButton(
+                                          onPressed: () async {
+                                            FirebaseFirestore.instance
+                                                .collection('users')
+                                                .doc(FirebaseAuth
+                                                    .instance.currentUser!.uid)
+                                                .collection("Creditcustomers")
+                                                .doc(snapshot
+                                                    .data!.docs[index].id)
+                                                .delete();
+                                            Navigator.pop(ctx);
+                                          },
+                                          child: Text('نعم')),
+                                      TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(ctx);
+                                          },
+                                          child: Text('لا'))
+                                    ],
+                                  ));
                         },
                         index: index,
                       );
@@ -70,25 +80,13 @@ class Creditors extends StatelessWidget {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
       floatingActionButton: FloatingActionButton(
-        onPressed: ()async {
-          final user=await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).get();
-          if(user['bloked']==false){
-            showBottomSheet(
-              context: context,
-              builder: (context) => AddCustomar(
-                path: 'Creditcustomers',
-              ),
-            );
-          }
-          else
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text('لا يمكنك ان تقوم باي عمليه في الوقت الحالي ',style: TextStyle(
-                fontSize: 20,
-                color: Colors.white,
-              ),),
-              backgroundColor: Colors.blue,
-            ));
-
+        onPressed: () {
+          showBottomSheet(
+            context: context,
+            builder: (context) => AddCustomar(
+              path: 'Creditcustomers',
+            ),
+          );
         },
         child: Icon(Icons.add),
       ),

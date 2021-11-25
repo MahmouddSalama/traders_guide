@@ -1,6 +1,10 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:financial_dealings/layout/cubit/cubit.dart';
+import 'package:financial_dealings/layout/cubit/stats.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class BlackListItem extends StatelessWidget {
   final String id;
@@ -15,7 +19,6 @@ class BlackListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-
     return StreamBuilder(
         stream: FirebaseFirestore.instance.collection('blacklist').snapshots(),
         builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -51,11 +54,13 @@ class BlackListItem extends StatelessWidget {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              Text('صور رفض البنك',style: TextStyle(
-                                fontSize: 15,
-                                color: Colors.blue,
-                                fontWeight: FontWeight.bold
-                              ),),
+                              Text(
+                                'صور رفض البنك',
+                                style: TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.blue,
+                                    fontWeight: FontWeight.bold),
+                              ),
                               Flexible(
                                 flex: 3,
                                 child: Container(
@@ -70,28 +75,35 @@ class BlackListItem extends StatelessWidget {
                                     itemCount: images.length,
                                     itemBuilder: (context, index, _) =>
                                         GestureDetector(
-                                          onTap: (){
-                                            showDialog(context: context, builder: (context){
+                                      onTap: () {
+                                        showDialog(
+                                            context: context,
+                                            builder: (context) {
                                               return AlertDialog(
                                                 content: Container(
-                                                  height: size.height*.6,
+                                                  height: size.height * .6,
                                                   width: size.width,
-                                                  child: Image.network(images[index],fit: BoxFit.fill,),
+                                                  child: Image.network(
+                                                    images[index],
+                                                    fit: BoxFit.fill,
+                                                  ),
                                                 ),
                                                 shape: RoundedRectangleBorder(
-                                                  borderRadius: BorderRadius.circular(20)),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20)),
                                               );
                                             });
-                                          },
-                                          child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(22),
-                                      child: Image.network(
+                                      },
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(22),
+                                        child: Image.network(
                                           images[index],
                                           fit: BoxFit.fill,
                                           width: 200,
+                                        ),
                                       ),
                                     ),
-                                        ),
                                   ),
                                 ),
                               ),
@@ -133,6 +145,15 @@ class BlackListItem extends StatelessWidget {
                                             ),
                                           ),
                                         ),
+                                        GestureDetector(
+                                          child: Icon(
+                                            Icons.delete,
+                                            color: Colors.red,
+                                          ),
+                                          onTap: () {
+                                            delete();
+                                          },
+                                        )
                                       ],
                                     ),
                                   ),

@@ -18,6 +18,7 @@ class MainLayout extends StatelessWidget {
         builder: (ctx, state) {
           var cubit = NewsCubit.get(ctx);
           _isAdmin(ctx);
+          _isBlock(ctx);
           return Scaffold(
             bottomNavigationBar: BottomNavigationBar(
               elevation: 0,
@@ -35,8 +36,8 @@ class MainLayout extends StatelessWidget {
                 style: TextStyle(color: Colors.black, fontSize: 25),
               ),
             ),
-            body: cubit.screens[cubit.curentIndex],
-            drawer: DrawerWidget(),
+            body:cubit.admin?cubit.screenAdmin[cubit.curentIndex]:cubit.screensUser[cubit.curentIndex],
+            drawer:cubit.admin? DrawerWidgetAdmin():DrawerWidgetUser(),
           );
         },
       ),
@@ -49,5 +50,12 @@ class MainLayout extends StatelessWidget {
         .doc(FirebaseAuth.instance.currentUser!.uid)
         .get();
     NewsCubit.get(ctx).isAdmin(user['admin']);
+  }
+  _isBlock(ctx) async {
+    var user = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .get();
+    NewsCubit.get(ctx).isBlocked(user['bloked']);
   }
 }

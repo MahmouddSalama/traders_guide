@@ -192,18 +192,6 @@ class _ProfileState extends State<Profile> {
                           text2: '*********',
                           icon: Icons.lock_open_outlined,
                         ),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 50),
-                          child: DefaultButton(
-                            function: ()async {
-                             await FirebaseAuth.instance.signOut();
-                            },
-                            text: 'تسجيل خروج',
-                          ),
-                        )
                       ],
                     ),
                   ),
